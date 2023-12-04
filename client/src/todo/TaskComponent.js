@@ -1,72 +1,82 @@
- import React from 'react';
+import React from 'react';
 import { TextField, Button, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import SaveIcon from '@material-ui/icons/Save';
- import { useTaskContext } from '../context/TaskContext';
+import { useTaskContext } from '../context/TaskContext';
 const TaskComponent = () => {
   const {
     tasks,
-    taskInput,
     editIndex,
-    editTask,
-    handleTaskInput,
+    editTitle,
+    editDescription,
     addTask,
     toggleEdit,
     deleteTask,
-    setEditTask,
+    setEditTitle,
+    setEditDescription,
+    logout,
   } = useTaskContext();
+  const isEditing = editIndex !== null;
+  const handleButtonClick = () => {
+    if (isEditing) {
+      toggleEdit(0);
+    } else {
+      addTask();
 
+    }
+  };
   return (
-    <div>
+    <div style={{ marginTop: "40px", marginLeft: "10px", marginRight: "10px" }}>
       <TextField
-        label="New Task"
+        label="Title"
         variant="outlined"
-        value={taskInput}
-        onChange={handleTaskInput}
+        value={editTitle}
+        onChange={(e) => setEditTitle(e.target.value)}
       />
-      <Button variant="contained" color="primary" onClick={addTask}>
-        Add
+      <TextField
+        style={{ marginLeft: "40px" }}
+        label="Description"
+        variant="outlined"
+        value={editDescription}
+        onChange={(e) => setEditDescription(e.target.value)}
+      />
+      <Button variant="contained" color="primary" style={{ marginLeft: "40px" }}
+        onClick={handleButtonClick}
+      >
+        {isEditing ? 'Update' : 'Add'}
+      </Button>
+      <Button variant="contained" color="primary"
+        onClick={logout}
+        style={{ marginLeft: "40px" }}
+      >
+        Logout
       </Button>
       <List>
-        {tasks.map((task, index) => (
+        {tasks?.map((task, index) => (
           <ListItem key={index}>
-            {editIndex === index ? (
-              <>
-                <TextField
-                  value={editTask}
-                  onChange={(e) => setEditTask(e.target.value)}
-                />
-                <IconButton onClick={() => toggleEdit(index)} edge="end" aria-label="save">
-                  <SaveIcon />
+            <>
+              <ListItemText primary={task.title} secondary={task.description} />
+              <ListItemSecondaryAction>
+                <IconButton
+                  onClick={() => toggleEdit(index)}
+                  edge="end"
+                  aria-label="edit"
+                >
+                  <EditIcon />
                 </IconButton>
-              </>
-            ) : (
-              <>
-                <ListItemText primary={task} />
-                <ListItemSecondaryAction>
-                  <IconButton
-                    onClick={() => toggleEdit(index)}
-                    edge="end"
-                    aria-label="edit"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => deleteTask(index)}
-                    edge="end"
-                    aria-label="delete"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </>
-            )}
+                <IconButton
+                  onClick={() => deleteTask(index)}
+                  edge="end"
+                  aria-label="delete"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </>
           </ListItem>
         ))}
       </List>
     </div>
   );
 };
-
 export default TaskComponent;

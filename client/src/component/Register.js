@@ -13,36 +13,45 @@ import {
     DialogContent,
 } from "@material-ui/core";
 import { VisibilityOff, Visibility, ArrowBack as ArrowBackIcon } from "@material-ui/icons";
+import { useAuth } from "../context/UserContext";
 
-  export const Register = () => {
+export const Register = () => {
+    const { register, openDialogSignUp,
+        dialogMeassage, setOpenDialogSignUp, setdialogMeassage, handleCloseSignUp } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
-    const [openDialogSignUp, setOpenDialogSignUp] = useState(false);
     const [regData, setRegData] = useState({
-        regfullName: "",
-        regEmail: "",
-        regPhoneNumber: "",
-        regPassword: "",
+        name: "",
+        email: "",
+        password: "",
     });
-
     const handleInputChange = (e) => {
         setRegData({
             ...regData,
             [e.target.name]: e.target.value,
         });
     };
-
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-
     const handleSubmit = () => {
-        // Implement your registration logic here using regData
+        if (regData.name.length === 0 || regData.email.length === 0 || regData.password.length === 0) {
+            setdialogMeassage("Fill all the fields")
+            setOpenDialogSignUp(true);
+            return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(regData.email)) {
+            setdialogMeassage("Enter correct format of email")
+            setOpenDialogSignUp(true);
+            return;
+        }
+        if (regData.email.length < 6 || regData.password.length < 6) {
+            setdialogMeassage("pwd length should be 6")
+            setOpenDialogSignUp(true);
+            return;
+        }
+        register(regData);
     };
-
-    const handleCloseSignUp = () => {
-        setOpenDialogSignUp(false);
-    };
-
     return (
         <div>
             <Box
@@ -71,7 +80,7 @@ import { VisibilityOff, Visibility, ArrowBack as ArrowBackIcon } from "@material
                     fullWidth
                     id="fullName"
                     placeholder="Full Name"
-                    name="regfullName"
+                    name="name"
                     onChange={handleInputChange}
                 />
                 <RegisterNameHead>Email Id</RegisterNameHead>
@@ -81,20 +90,10 @@ import { VisibilityOff, Visibility, ArrowBack as ArrowBackIcon } from "@material
                     fullWidth
                     id="email"
                     placeholder="Email Address"
-                    name="regEmail"
+                    name="email"
                     onChange={handleInputChange}
                 />
-                <RegisterNameHead>Phone Number</RegisterNameHead>
-                <InputTextField
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
-                    placeholder="Phone Number"
-                    id="phoneNumber"
-                    name="regPhoneNumber"
-                    type="tel"
-                    onChange={handleInputChange}
-                />
+
                 <RegisterNameHead>Password</RegisterNameHead>
                 <InputTextField
                     variant="outlined"
@@ -102,7 +101,7 @@ import { VisibilityOff, Visibility, ArrowBack as ArrowBackIcon } from "@material
                     fullWidth
                     id="password"
                     placeholder="Password"
-                    name="regPassword"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     onChange={handleInputChange}
                     InputProps={{
@@ -132,7 +131,7 @@ import { VisibilityOff, Visibility, ArrowBack as ArrowBackIcon } from "@material
                 <Dialog open={openDialogSignUp} onClose={handleCloseSignUp}>
                     <DialogTitle>Something went wrong</DialogTitle>
                     <DialogContent>
-                        <DialogContentText>{/* Display error message here */}</DialogContentText>
+                        <DialogContentText>{dialogMeassage}</DialogContentText>
                     </DialogContent>
                     <DialogActions>
                         <Button

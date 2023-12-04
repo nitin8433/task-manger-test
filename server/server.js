@@ -19,7 +19,6 @@ app.use(bodyParser.json());
 // app.use(expressValidator());
 app.use(cors());
 
-
 //routes middleware
 app.use('/api', authRoutes);
 app.use('/api', taskRoutes);

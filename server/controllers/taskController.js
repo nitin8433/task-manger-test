@@ -7,7 +7,6 @@ exports.createTask = (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-
     const { title, description, completed } = req.body;
     const createdBy = req.auth._id; // Assuming authenticated user's ID is available in req.auth._id
 
@@ -31,7 +30,6 @@ exports.createTask = (req, res) => {
 // Get a specific task
 exports.getTask = (req, res) => {
     const taskId = req.params.taskId;
-
     Task.findById(taskId)
         .then(task => {
             if (!task) {
@@ -51,7 +49,6 @@ exports.updateTask = (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-
     const taskId = req.params.taskId;
     const { title, description, completed } = req.body;
 
@@ -71,13 +68,24 @@ exports.updateTask = (req, res) => {
 // Delete a specific task
 exports.deleteTask = (req, res) => {
     const taskId = req.params.taskId;
-
     Task.findByIdAndDelete(taskId)
         .then(deletedTask => {
             if (!deletedTask) {
                 return res.status(404).json({ error: 'Task not found' });
             }
             res.json({ message: 'Task deleted successfully' });
+        })
+        .catch(error => {
+            console.error(error);
+            res.status(500).json({ error: 'Internal server error' });
+        });
+};
+
+//Fetch all task
+exports.getAllTasks = (req, res) => {
+    Task.find()
+        .then(tasks => {
+            res.json({ tasks });
         })
         .catch(error => {
             console.error(error);

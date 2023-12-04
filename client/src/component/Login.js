@@ -13,15 +13,15 @@ import {
     DialogContentText,
 } from "@material-ui/core";
 import { Visibility, VisibilityOff, ArrowBack as ArrowBackIcon } from "@material-ui/icons";
-
- export const  Login = () => {
+import { useAuth } from "../context/UserContext";
+export const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [openDialogSignUp, setOpenDialogSignUp] = useState(false);
     const [loginData, setLoginData] = useState({
-        loginemail: "",
-        loginpassword: "",
+        email: "",
+        password: "",
     });
-
+    const { login, openDialogSignUp,
+        dialogMeassage, setOpenDialogSignUp, setdialogMeassage, handleCloseSignUp } = useAuth();
     const handleInputChange = (e) => {
         setLoginData({
             ...loginData,
@@ -33,12 +33,26 @@ import { Visibility, VisibilityOff, ArrowBack as ArrowBackIcon } from "@material
         setShowPassword(!showPassword);
     };
 
-    const onLogin = () => {
-         console.log(loginData)
-    };
+    const onLogin = async () => {
+        if (loginData.email.length === 0 || loginData.password.length === 0) {
+            setOpenDialogSignUp(true);
+            setdialogMeassage("Fill all the fields")
+            return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(loginData.email)) {
+            setdialogMeassage("Enter correct format of email")
+            setOpenDialogSignUp(true);
+            return;
+        }
+        if (loginData.email.length < 6 || loginData.password.length < 6) {
+            setdialogMeassage("pwd length should be 6")
+            setOpenDialogSignUp(true);
+            return;
+        }
 
-    const handleCloseSignUp = () => {
-        setOpenDialogSignUp(false);
+        login(loginData);
+
     };
 
     return (
@@ -69,7 +83,7 @@ import { Visibility, VisibilityOff, ArrowBack as ArrowBackIcon } from "@material
                     fullWidth
                     id="email"
                     placeholder="Email Address"
-                    name="loginemail"
+                    name="email"
                     type="email"
                     onChange={handleInputChange}
                 />
@@ -81,7 +95,7 @@ import { Visibility, VisibilityOff, ArrowBack as ArrowBackIcon } from "@material
                     fullWidth
                     id="password"
                     placeholder="Password"
-                    name="loginpassword"
+                    name="password"
                     onChange={handleInputChange}
                     InputProps={{
                         endAdornment: (
@@ -108,7 +122,7 @@ import { Visibility, VisibilityOff, ArrowBack as ArrowBackIcon } from "@material
                 <Dialog open={openDialogSignUp} onClose={handleCloseSignUp}>
                     <DialogTitle>Something went wrong</DialogTitle>
                     <DialogContent>
-                        <DialogContentText>{/* Display error message here */}</DialogContentText>
+                        <DialogContentText>{dialogMeassage}</DialogContentText>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleCloseSignUp} data-test-id="handleCloseSignUp" color="primary">

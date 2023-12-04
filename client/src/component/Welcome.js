@@ -6,26 +6,24 @@ import {
     styled,
     Grid
 } from "@material-ui/core";
-import { Link } from "react-router-dom";
 export const Welcome = () => {
     const onSignIn = () => {
-   
+        window.location.replace('/login')
     };
-
     const onRegister = () => {
+        window.location.replace('/register')
     };
-
     return (
         <div>
             <MainBox>
                 <SignHeading>Welcome Back !!!</SignHeading>
                 <ContainerGrid container justify="center">
                     <Grid item>
-                        <LoginButton variant="contained" > <Link to="/login">
-                            Sign In</Link>
+                        <LoginButton variant="contained" onClick={onSignIn} >
+                            Sign In
                         </LoginButton>
-                        <LoginButton variant="contained" onClick={onRegister} > <Link to="/register">
-                            Sign Up</Link>
+                        <LoginButton variant="contained" onClick={onRegister} >
+                            Sign Up
                         </LoginButton>
                     </Grid>
                 </ContainerGrid>
